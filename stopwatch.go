@@ -90,7 +90,7 @@ func (s *Stopwatch) Reset() {
 
 // String gives the string representation of the duration.
 func (s *Stopwatch) String() string {
-	// display using local formmating if possible
+	// display using local formatting if possible
 	if s.format != nil {
 		return s.format(s.elapsed)
 	}
