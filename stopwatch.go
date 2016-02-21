@@ -127,7 +127,12 @@ func (s *Stopwatch) Elapsed() time.Duration {
 	return s.elapsed
 }
 
-// ElapsedSeconds returns the number of seconds since starting
+// ElapsedSeconds is a helper function returns the number of seconds since starting
 func (s *Stopwatch) ElapsedSeconds() float64 {
 	return s.Elapsed().Seconds()
+}
+
+// ElapsedMilliSeconds is a helper function returns the number of milliseconds since starting
+func (s *Stopwatch) ElapsedMilliSeconds() float64 {
+	return float64(s.Elapsed() / time.Millisecond)
 }
