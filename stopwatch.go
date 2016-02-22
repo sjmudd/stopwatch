@@ -31,8 +31,11 @@ import (
 	"time"
 )
 
-// this holds the package level global format of a Stopwatch.String() function (if used)
-var globalFormat func(time.Duration) string
+// DefaultFormat allows the Stopwatch.String() function to be
+// configured differently to time.Duration if needed.  This is done
+// at the global package level to avoid having to do on each Stopwatch
+// instance.
+var DefaultFormat = func(t time.Duration) string { return t.String() }
 
 // Stopwatch is a structure to hold information about a stopwatch
 type Stopwatch struct {
@@ -72,16 +75,6 @@ func (s *Stopwatch) Stop() {
 	}
 }
 
-// Pause is an alias for Stop()
-func (s *Stopwatch) Pause() {
-	s.Stop()
-}
-
-// Restart is an alias for Start()
-func (s *Stopwatch) Restart() {
-	s.Start()
-}
-
 // Reset resets the counters
 func (s *Stopwatch) Reset() {
 	s.refTime = time.Time{}
@@ -94,19 +87,8 @@ func (s *Stopwatch) String() string {
 	if s.format != nil {
 		return s.format(s.elapsed)
 	}
-	// display using global formmating if possible
-	if globalFormat != nil {
-		return globalFormat(s.elapsed)
-	}
-	// display using default time.Duration formatting
-	return s.elapsed.String()
-
-}
-
-// SetStringFormat allows the String() function to be configured differently to time.Duration if needed.
-// This is done at the global package level to avoid having to do on each Stopwatch instance
-func SetStringFormat(f func(time.Duration) string) {
-	globalFormat = f
+	// display using package DefaultFormat
+	return DefaultFormat(s.elapsed)
 }
 
 // SetStringFormat allows the String() function to be configured  differently to time.Duration for the specific Stopwatch.
