@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package stopwatch
 
 import (
+	"errors"
+	"fmt"
 	"time"
 )
 
@@ -37,31 +39,40 @@ type NamedStopwatch struct {
 	stopwatches map[string]*Stopwatch
 }
 
-// 
-func (ns *NamedStopwatch) AddStopwatch(name string, s *Stopwatch) {
+// AddStopwatch adds a Stopwatch with the given name.
+func (ns *NamedStopwatch) AddStopwatch(name string, s *Stopwatch) error {
 	if ns.stopwatches == nil {
 		ns.stopwatches = make(map[string](*Stopwatch))
 	}
+	if _, found := ns.stopwatches[name]; !found {
+		return errors.New(fmt.Sprintf("Stopwatch name %q already exists", name))
+	}
 	ns.stopwatches[name] = s
+	return nil
 }
 
+// Start starts a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Start(name string) {
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Start()
 	}
 }
+
+// Stop stops a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Stop(name string) {
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Stop()
 	}
 }
 
+// Reset resets a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Reset(name string) {
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Reset()
 	}
 }
 
+// Keys returns the known names of Stopwatches
 func (ns *NamedStopwatch) Keys() []string {
 	keys := []string{}
 	for k, _ := range ns.stopwatches {
@@ -70,6 +81,7 @@ func (ns *NamedStopwatch) Keys() []string {
 	return keys
 }
 
+// Elapsed returns the elapsed time.Duration of the named stopwatch if it exists or 0
 func (ns *NamedStopwatch) Elapsed(name string) time.Duration {
 	if s, ok := ns.stopwatches[name]; ok {
 		return s.Elapsed()
@@ -77,6 +89,7 @@ func (ns *NamedStopwatch) Elapsed(name string) time.Duration {
 	return time.Duration(0)
 }
 
+// Elapsed returns the elapsed time in seconds of the named stopwatch if it exists or 0
 func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
 	if s, ok := ns.stopwatches[name]; ok {
 		return s.ElapsedSeconds()
@@ -84,6 +97,7 @@ func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
 	return float64(0)
 }
 
+// Elapsed returns the elapsed time in milliseconds of the named stopwatch if it exists or 0
 func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
 	if s, ok := ns.stopwatches[name]; ok {
 		return s.ElapsedMilliSeconds()
