@@ -36,19 +36,44 @@ import (
 // NamedStopwatch holds a map of string named stopwatches. Intended to be used when several
 // Stopwatches are being used at once, and easy to use as they are name based.
 type NamedStopwatch struct {
-	stopwatches map[string]*Stopwatch
+	stopwatches map[string](*Stopwatch)
+}
+
+// NewNamedStopwatch creates an empty Stopwatch list
+func NewNamedStopwatch() *NamedStopwatch {
+	return new(NamedStopwatch)
 }
 
 // AddStopwatch adds a Stopwatch with the given name.
-func (ns *NamedStopwatch) AddStopwatch(name string, s *Stopwatch) error {
+func (ns *NamedStopwatch) Add(name string) error {
 	if ns.stopwatches == nil {
 		ns.stopwatches = make(map[string](*Stopwatch))
 	}
-	if _, found := ns.stopwatches[name]; !found {
+	if _, ok := ns.stopwatches[name]; ok {
 		return errors.New(fmt.Sprintf("Stopwatch name %q already exists", name))
 	}
-	ns.stopwatches[name] = s
+	ns.stopwatches[name] = New(nil)
 	return nil
+}
+
+// Delete removes a Stopwatch with the given name (if it exists)
+func (ns *NamedStopwatch) Delete(name string) {
+	if ns.stopwatches == nil {
+		return
+	}
+
+	delete(ns.stopwatches, name) // check if it exists in case the user did the wrong thing
+}
+
+// Exists returns true if the NamedStopwatch exists
+func (ns *NamedStopwatch) Exists(name string) bool {
+	if ns == nil {
+		return false
+	}
+
+	_, found := ns.stopwatches[name]
+
+	return found
 }
 
 // Start starts a NamedStopwatch if it exists
