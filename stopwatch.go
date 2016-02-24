@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package stopwatch
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -47,7 +48,7 @@ type Stopwatch struct {
 // Start returns a pointer to a new Stopwatch struct and indicates that the stopwatch has started
 func Start(f func(time.Duration) string) *Stopwatch {
 	s := New(f)
-	s.refTime = time.Now()
+	s.Start()
 
 	return s
 }
@@ -62,7 +63,9 @@ func New(f func(time.Duration) string) *Stopwatch {
 
 // Start records that we are now running. If called previously this is a no-op.
 func (s *Stopwatch) Start() {
-	if !s.IsRunning() {
+	if s.IsRunning() {
+		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true")
+	} else {
 		s.refTime = time.Now()
 	}
 }
@@ -72,11 +75,16 @@ func (s *Stopwatch) Stop() {
 	if s.IsRunning() {
 		s.elapsed += time.Since(s.refTime)
 		s.refTime = time.Time{}
+	} else {
+		fmt.Printf("WARNING: Stopwatch.Stop() IsRunning is false")
 	}
 }
 
 // Reset resets the counters
 func (s *Stopwatch) Reset() {
+	if s.IsRunning() {
+		fmt.Printf("WARNING: Stopwatch.Reset() IsRunning is true")
+	}
 	s.refTime = time.Time{}
 	s.elapsed = 0
 }

@@ -78,6 +78,9 @@ func (ns *NamedStopwatch) Exists(name string) bool {
 
 // Start starts a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Start(name string) {
+	if ns == nil {
+		return
+	}
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Start()
 	}
@@ -85,6 +88,9 @@ func (ns *NamedStopwatch) Start(name string) {
 
 // Stop stops a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Stop(name string) {
+	if ns == nil {
+		return
+	}
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Stop()
 	}
@@ -92,6 +98,9 @@ func (ns *NamedStopwatch) Stop(name string) {
 
 // Reset resets a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Reset(name string) {
+	if ns == nil {
+		return
+	}
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Reset()
 	}
@@ -99,6 +108,9 @@ func (ns *NamedStopwatch) Reset(name string) {
 
 // Keys returns the known names of Stopwatches
 func (ns *NamedStopwatch) Keys() []string {
+	if ns == nil {
+		return nil
+	}
 	keys := []string{}
 	for k, _ := range ns.stopwatches {
 		keys = append(keys, k)
