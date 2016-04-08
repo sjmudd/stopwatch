@@ -43,18 +43,46 @@ func TestNewNamedStopwatch(t *testing.T) {
 	}
 }
 
+var testNames []string
+
+func init() {
+	testNames = []string{"S1", "S2", "S3", "S4"}
+}
+
 // uses Add and Exists
 func TestAddNamedStopwatch(t *testing.T) {
 	n := NewNamedStopwatch()
 
-	for i, v := range []string{ "S1", "S2", "S3", "S4" } {
+	for i, v := range testNames {
 		n.Add(v)
 		len := len(n.Keys())
 		if len != (i + 1) {
-			t.Errorf("TestAddNamedStopwatch(): len(n.Keys()) = %d after adding %q, expecting %d", len, v, 1 + i)
+			t.Errorf("TestAddNamedStopwatch(): len(n.Keys()) = %d after adding %q, expecting %d", len, v, 1+i)
 		}
 		if !n.Exists(v) {
 			t.Errorf("TestAddNamedStopwatch(): %q not exists after adding it.", v)
+		}
+	}
+}
+
+// checkAddMany behaves the same as Add
+func TestAddManyNamedStopwatch(t *testing.T) {
+	n1 := NewNamedStopwatch()
+	n2 := NewNamedStopwatch()
+
+	names := []string{}
+	for i := range testNames {
+		names = append(names, testNames[i])
+	}
+	n1.AddMany(names)
+	size := len(n1.Keys())
+	if size != len(testNames) {
+		t.Errorf("TestAddManyNamedStopwatch(): len(n1.Keys()) = %d, expecting %d", size, 1+i)
+	}
+
+	for i, v := range testNames {
+		if !n2.Exists(v) {
+			t.Errorf("TestAddManyNamedStopwatch(): name %q does not exist.", v)
 		}
 	}
 }

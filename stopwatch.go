@@ -45,7 +45,8 @@ type Stopwatch struct {
 	refTime time.Time
 }
 
-// Start returns a pointer to a new Stopwatch struct and indicates that the stopwatch has started
+// Start returns a pointer to a new Stopwatch struct and indicates
+// that the stopwatch has started.
 func Start(f func(time.Duration) string) *Stopwatch {
 	s := New(f)
 	s.Start()
@@ -53,7 +54,7 @@ func Start(f func(time.Duration) string) *Stopwatch {
 	return s
 }
 
-// New returns a pointer to a new Stopwatch struct
+// New returns a pointer to a new Stopwatch struct.
 func New(f func(time.Duration) string) *Stopwatch {
 	s := new(Stopwatch)
 	s.format = f
@@ -61,7 +62,8 @@ func New(f func(time.Duration) string) *Stopwatch {
 	return s
 }
 
-// Start records that we are now running. If called previously this is a no-op.
+// Start records that we are now running. If called previously this
+// is a no-op.
 func (s *Stopwatch) Start() {
 	if s.IsRunning() {
 		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true")
@@ -70,7 +72,8 @@ func (s *Stopwatch) Start() {
 	}
 }
 
-// Stop collects the elapsed time if running and remembers we are not running
+// Stop collects the elapsed time if running and remembers we are
+// not running.
 func (s *Stopwatch) Stop() {
 	if s.IsRunning() {
 		s.elapsed += time.Since(s.refTime)
@@ -80,7 +83,7 @@ func (s *Stopwatch) Stop() {
 	}
 }
 
-// Reset resets the counters
+// Reset resets the counters.
 func (s *Stopwatch) Reset() {
 	if s.IsRunning() {
 		fmt.Printf("WARNING: Stopwatch.Reset() IsRunning is true")
@@ -99,17 +102,19 @@ func (s *Stopwatch) String() string {
 	return DefaultFormat(s.elapsed)
 }
 
-// SetStringFormat allows the String() function to be configured  differently to time.Duration for the specific Stopwatch.
+// SetStringFormat allows the String() function to be configured
+// differently to time.Duration for the specific Stopwatch.
 func (s *Stopwatch) SetStringFormat(f func(time.Duration) string) {
 	s.format = f
 }
 
-// IsRunning is a helper function to indicate if in theory the stopwatch is working.
+// IsRunning is a helper function to indicate if in theory the
+// stopwatch is working.
 func (s *Stopwatch) IsRunning() bool {
 	return !s.refTime.IsZero()
 }
 
-// Elapsed returns the elapsed time since starting (in time.Duration)
+// Elapsed returns the elapsed time since starting (in time.Duration).
 func (s *Stopwatch) Elapsed() time.Duration {
 	if s.IsRunning() {
 		return time.Since(s.refTime)
@@ -117,12 +122,14 @@ func (s *Stopwatch) Elapsed() time.Duration {
 	return s.elapsed
 }
 
-// ElapsedSeconds is a helper function returns the number of seconds since starting
+// ElapsedSeconds is a helper function returns the number of seconds
+// since starting.
 func (s *Stopwatch) ElapsedSeconds() float64 {
 	return s.Elapsed().Seconds()
 }
 
-// ElapsedMilliSeconds is a helper function returns the number of milliseconds since starting
+// ElapsedMilliSeconds is a helper function returns the number of
+// milliseconds since starting.
 func (s *Stopwatch) ElapsedMilliSeconds() float64 {
 	return float64(s.Elapsed() / time.Millisecond)
 }

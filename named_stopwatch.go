@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package stopwatch
 
 import (
-	"errors"
 	"fmt"
 	"time"
 )
@@ -44,15 +43,22 @@ func NewNamedStopwatch() *NamedStopwatch {
 	return new(NamedStopwatch)
 }
 
-// AddStopwatch adds a Stopwatch with the given name.
+// Add adds a single Stopwatch name with the given name.
 func (ns *NamedStopwatch) Add(name string) error {
+	return ns.AddMany([]string{name})
+}
+
+// AddMany adds several named stopwatches in one go
+func (ns *NamedStopwatch) AddMany(names []string) error {
 	if ns.stopwatches == nil {
 		ns.stopwatches = make(map[string](*Stopwatch))
 	}
-	if _, ok := ns.stopwatches[name]; ok {
-		return errors.New(fmt.Sprintf("Stopwatch name %q already exists", name))
+	for _, name := range names {
+		if _, ok := ns.stopwatches[name]; ok {
+			return fmt.Errorf("NamedStopwatch.AddMany()Stopwatch name %q already exists", name)
+		}
+		ns.stopwatches[name] = New(nil)
 	}
-	ns.stopwatches[name] = New(nil)
 	return nil
 }
 
@@ -112,7 +118,7 @@ func (ns *NamedStopwatch) Keys() []string {
 		return nil
 	}
 	keys := []string{}
-	for k, _ := range ns.stopwatches {
+	for k := range ns.stopwatches {
 		keys = append(keys, k)
 	}
 	return keys
@@ -126,7 +132,8 @@ func (ns *NamedStopwatch) Elapsed(name string) time.Duration {
 	return time.Duration(0)
 }
 
-// Elapsed returns the elapsed time in seconds of the named stopwatch if it exists or 0
+// ElapsedSeconds returns the elapsed time in seconds of the named
+// stopwatch if it exists or 0.
 func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
 	if s, ok := ns.stopwatches[name]; ok {
 		return s.ElapsedSeconds()
@@ -134,7 +141,8 @@ func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
 	return float64(0)
 }
 
-// Elapsed returns the elapsed time in milliseconds of the named stopwatch if it exists or 0
+// ElapsedMilliSeconds returns the elapsed time in milliseconds of
+// the named stopwatch if it exists or 0.
 func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
 	if s, ok := ns.stopwatches[name]; ok {
 		return s.ElapsedMilliSeconds()
