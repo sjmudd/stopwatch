@@ -91,6 +91,15 @@ func (ns *NamedStopwatch) Start(name string) {
 		s.Start()
 	}
 }
+// StartMany allows you to start several stopwatches in one go
+func (ns *NamedStopwatch) StartMany(names []string) {
+	if ns == nil {
+		return
+	}
+	for _, name := range names {
+		ns.stopwatches[name].Start()
+	}
+}
 
 // Stop stops a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Stop(name string) {
@@ -99,6 +108,16 @@ func (ns *NamedStopwatch) Stop(name string) {
 	}
 	if s, ok := ns.stopwatches[name]; ok {
 		s.Stop()
+	}
+}
+
+// StopMany allows you to stop several stopwatches in one go
+func (ns *NamedStopwatch) StopMany(names []string) {
+	if ns == nil {
+		return
+	}
+	for _, name := range names {
+		ns.stopwatches[name].Stop()
 	}
 }
 
