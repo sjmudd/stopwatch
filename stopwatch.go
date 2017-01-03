@@ -66,7 +66,7 @@ func New(f func(time.Duration) string) *Stopwatch {
 // is a no-op.
 func (s *Stopwatch) Start() {
 	if s.IsRunning() {
-		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true")
+		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true\n")
 	} else {
 		s.refTime = time.Now()
 	}
@@ -79,14 +79,14 @@ func (s *Stopwatch) Stop() {
 		s.elapsed += time.Since(s.refTime)
 		s.refTime = time.Time{}
 	} else {
-		fmt.Printf("WARNING: Stopwatch.Stop() IsRunning is false")
+		fmt.Printf("WARNING: Stopwatch.Stop() IsRunning is false\n")
 	}
 }
 
 // Reset resets the counters.
 func (s *Stopwatch) Reset() {
 	if s.IsRunning() {
-		fmt.Printf("WARNING: Stopwatch.Reset() IsRunning is true")
+		fmt.Printf("WARNING: Stopwatch.Reset() IsRunning is true\n")
 	}
 	s.refTime = time.Time{}
 	s.elapsed = 0
