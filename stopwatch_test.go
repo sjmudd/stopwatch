@@ -34,7 +34,7 @@ import (
 func TestNew(t *testing.T) {
 	s := New(nil)
 	if s == nil {
-		t.Error("TestNew(): New() returned %v, expecting non-nil value", s)
+		t.Errorf("TestNew(): New() returned %v, expecting non-nil value", s)
 	}
 }
 
@@ -42,7 +42,7 @@ func TestStart(t *testing.T) {
 	s := Start(nil)
 	elapsed := s.ElapsedSeconds() // convert to seconds should be ok for now
 	if elapsed == 0 {
-		t.Error("TestStart(): s.Elapsed() returned %+v, expecting > 0", elapsed)
+		t.Errorf("TestStart(): s.Elapsed() returned %+v, expecting > 0", elapsed)
 	}
 }
 
@@ -52,7 +52,7 @@ func TestStop(t *testing.T) {
 	elapsed1 := s.ElapsedSeconds() // convert to seconds should be ok for now
 	elapsed2 := s.ElapsedSeconds() // convert to seconds should be ok for now
 	if elapsed1 != elapsed2 {
-		t.Error("TestStop(): elapsed1 (%v) != elapsed2 (%v). Expecting them to be the same", elapsed1, elapsed2)
+		t.Errorf("TestStop(): elapsed1 (%v) != elapsed2 (%v). Expecting them to be the same", elapsed1, elapsed2)
 	}
 }
 
@@ -64,18 +64,18 @@ func TestReset(t *testing.T) {
 func TestIsRunning(t *testing.T) {
 	s := New(nil)
 	if s.IsRunning() {
-		t.Error("TestIsRunning() returns %v after New(), expecting false", s.IsRunning())
+		t.Errorf("TestIsRunning() returns %v after New(), expecting false", s.IsRunning())
 	}
 	s.Start()
 	if !s.IsRunning() {
-		t.Error("TestIsRunning() returns %v after Start(), expecting true", s.IsRunning())
+		t.Errorf("TestIsRunning() returns %v after Start(), expecting true", s.IsRunning())
 	}
 	s.Start()
 	if !s.IsRunning() {
-		t.Error("TestIsRunning() returns %v after 2nd Start(), expecting true", s.IsRunning())
+		t.Errorf("TestIsRunning() returns %v after 2nd Start(), expecting true", s.IsRunning())
 	}
 	s.Stop()
 	if s.IsRunning() {
-		t.Error("TestIsRunning() returns %v after 2nd Stop(), expecting false", s.IsRunning())
+		t.Errorf("TestIsRunning() returns %v after 2nd Stop(), expecting false", s.IsRunning())
 	}
 }

@@ -39,7 +39,7 @@ func TestNewNamedStopwatch(t *testing.T) {
 	}
 	len := len(n.Keys())
 	if len != 0 {
-		t.Error("TestNewNamedStopwatch() len(n) = %d, expecting %d", len, 1)
+		t.Errorf("TestNewNamedStopwatch() len(n) = %d, expecting %d", len, 1)
 	}
 }
 
