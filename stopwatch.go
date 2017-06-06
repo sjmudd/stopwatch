@@ -44,9 +44,9 @@ var DefaultFormat = func(t time.Duration) string { return t.String() }
 // Stopwatch is a structure to hold information about a stopwatch
 type Stopwatch struct {
 	sync.RWMutex
-	format  func(time.Duration) string
-	elapsed time.Duration
-	refTime time.Time
+	format      func(time.Duration) string
+	elapsedTime time.Duration
+	refTime     time.Time
 }
 
 // Start returns a pointer to a new Stopwatch struct and indicates
@@ -66,14 +66,14 @@ func New(f func(time.Duration) string) *Stopwatch {
 	return s
 }
 
-// Start records that we are now running. If called previously this
-// is a no-op.
+// Start records that we are now running.
+// If called previously this is a no-op and the existing refTime
+// is not touched.
 func (s *Stopwatch) Start() {
 	s.Lock()
 	defer s.Unlock()
-	if s.IsRunning() {
-		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true\n")
-	} else {
+
+	if !s.isRunning() {
 		s.refTime = time.Now()
 	}
 }
@@ -83,11 +83,12 @@ func (s *Stopwatch) Start() {
 func (s *Stopwatch) Stop() {
 	s.Lock()
 	defer s.Unlock()
-	if s.IsRunning() {
-		s.elapsed += time.Since(s.refTime)
+
+	if s.isRunning() {
+		s.elapsedTime += time.Since(s.refTime)
 		s.refTime = time.Time{}
 	} else {
-		fmt.Printf("WARNING: Stopwatch.Stop() IsRunning is false\n")
+		fmt.Printf("WARNING: Stopwatch.Stop() isRunning is false\n")
 	}
 }
 
@@ -95,23 +96,25 @@ func (s *Stopwatch) Stop() {
 func (s *Stopwatch) Reset() {
 	s.Lock()
 	defer s.Unlock()
-	if s.IsRunning() {
-		fmt.Printf("WARNING: Stopwatch.Reset() IsRunning is true\n")
+
+	if s.isRunning() {
+		fmt.Printf("WARNING: Stopwatch.Reset() isRunning is true\n")
 	}
 	s.refTime = time.Time{}
-	s.elapsed = 0
+	s.elapsedTime = 0
 }
 
 // String gives the string representation of the duration.
 func (s *Stopwatch) String() string {
 	s.RLock()
-	defer s.Unlock()
+	defer s.RUnlock()
+
 	// display using local formatting if possible
 	if s.format != nil {
-		return s.format(s.elapsed)
+		return s.format(s.elapsedTime)
 	}
 	// display using package DefaultFormat
-	return DefaultFormat(s.elapsed)
+	return DefaultFormat(s.elapsedTime)
 }
 
 // SetStringFormat allows the String() function to be configured
@@ -119,32 +122,50 @@ func (s *Stopwatch) String() string {
 func (s *Stopwatch) SetStringFormat(f func(time.Duration) string) {
 	s.Lock()
 	defer s.Unlock()
+
 	s.format = f
+}
+
+// isRunning is a private function to determine if the stopwatch
+// is running and assumes a lock is already held.
+func (s *Stopwatch) isRunning() bool {
+	return !s.refTime.IsZero()
 }
 
 // IsRunning is a helper function to indicate if in theory the
 // stopwatch is working.
 func (s *Stopwatch) IsRunning() bool {
 	s.RLock()
-	defer s.Unlock()
-	return !s.refTime.IsZero()
+	defer s.RUnlock()
+
+	return s.isRunning()
+}
+
+// elapsed assumes the structure is already locked and returns the
+// appropriate value.  That is the previously time since the stopwatch
+// was started if it's running, or the previously recorded elapsed
+// time if it's not.
+func (s *Stopwatch) elapsed() time.Duration {
+	if s.isRunning() {
+		return time.Since(s.refTime)
+	}
+	return s.elapsedTime
 }
 
 // Elapsed returns the elapsed time since starting (in time.Duration).
 func (s *Stopwatch) Elapsed() time.Duration {
 	s.RLock()
-	defer s.Unlock()
-	if s.IsRunning() {
-		return time.Since(s.refTime)
-	}
-	return s.elapsed
+	defer s.RUnlock()
+
+	return s.elapsed() // Can I do this?
 }
 
 // ElapsedSeconds is a helper function returns the number of seconds
 // since starting.
 func (s *Stopwatch) ElapsedSeconds() float64 {
 	s.RLock()
-	defer s.Unlock()
+	defer s.RUnlock()
+
 	return s.Elapsed().Seconds()
 }
 
@@ -152,7 +173,8 @@ func (s *Stopwatch) ElapsedSeconds() float64 {
 // milliseconds since starting.
 func (s *Stopwatch) ElapsedMilliSeconds() float64 {
 	s.RLock()
-	defer s.Unlock()
+	defer s.RUnlock()
+
 	return float64(s.Elapsed() / time.Millisecond)
 }
 
@@ -160,5 +182,6 @@ func (s *Stopwatch) ElapsedMilliSeconds() float64 {
 func (s *Stopwatch) AddElapsed(t time.Duration) {
 	s.Lock()
 	defer s.Unlock()
-	s.elapsed += t
+
+	s.elapsedTime += t
 }
