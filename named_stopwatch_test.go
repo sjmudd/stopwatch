@@ -43,11 +43,7 @@ func TestNewNamedStopwatch(t *testing.T) {
 	}
 }
 
-var testNames []string
-
-func init() {
-	testNames = []string{"S1", "S2", "S3", "S4"}
-}
+var testNames = []string{"S1", "S2", "S3", "S4"}
 
 // uses Add and Exists
 func TestAddNamedStopwatch(t *testing.T) {
@@ -72,17 +68,26 @@ func TestAddManyNamedStopwatch(t *testing.T) {
 
 	names := []string{}
 	for i := range testNames {
-		names = append(names, testNames[i])
+		name := testNames[i]
+		names = append(names, name)
+		n1.Add(name) // populate n1 with testNames using Add()
 	}
-	n1.AddMany(names)
-	size := len(n1.Keys())
-	if size != len(testNames) {
-		t.Errorf("TestAddManyNamedStopwatch(): len(n1.Keys()) = %d, expecting %d", size, 1+i)
+	n2.AddMany(names) // populate n2 with testNames using AddMany()
+
+	// check sizes
+	if len(n1.Keys()) != len(n2.Keys()) {
+		t.Errorf("TestAddManyNamedStopwatch(): len(n1.Keys()) != len(n2.Keys)()). Got %d and %d and expecting them to be the same",
+			len(n1.Keys()),
+			len(n2.Keys()))
 	}
 
-	for i, v := range testNames {
-		if !n2.Exists(v) {
-			t.Errorf("TestAddManyNamedStopwatch(): name %q does not exist.", v)
+	// check each value exists in the other stopwatch.
+	for _, name := range testNames {
+		if !n1.Exists(name) {
+			t.Errorf("TestAddManyNamedStopwatch(): name %q not found in n1.", name)
+		}
+		if !n2.Exists(name) {
+			t.Errorf("TestAddManyNamedStopwatch(): name %q not found in n2.", name)
 		}
 	}
 }
