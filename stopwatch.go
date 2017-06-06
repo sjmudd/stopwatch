@@ -62,12 +62,11 @@ func New(f func(time.Duration) string) *Stopwatch {
 	return s
 }
 
-// Start records that we are now running. If called previously this
-// is a no-op.
+// Start records that we are now running.
+// If called previously this is a no-op and the existing refTime
+// is not touched.
 func (s *Stopwatch) Start() {
-	if s.IsRunning() {
-		fmt.Printf("WARNING: Stopwatch.Start() IsRunning is true")
-	} else {
+	if !s.IsRunning() {
 		s.refTime = time.Now()
 	}
 }
