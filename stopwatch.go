@@ -179,9 +179,9 @@ func (s *Stopwatch) ElapsedMilliSeconds() float64 {
 }
 
 // AddElapsed just adds an elapsed time to the value that's been stored.
-func (s *Stopwatch) AddElapsed(t time.Duration) {
+func (s *Stopwatch) AddElapsedSince(t time.Time) {
 	s.Lock()
 	defer s.Unlock()
 
-	s.elapsedTime += t
+	s.elapsedTime += time.Since(t)
 }
