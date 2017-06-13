@@ -155,7 +155,6 @@ func (ns *NamedStopwatch) Stop(name string) {
 	ns.stop(name)
 }
 
-
 // stop stops a NamedStopwatch if it exists and expects the structure to be locked.
 func (ns *NamedStopwatch) stop(name string) {
 	if ns == nil {
@@ -257,4 +256,14 @@ func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
 		return s.ElapsedMilliSeconds()
 	}
 	return float64(0)
+}
+
+// AddElapsedSince adds the duration since the reference time to the given named stopwatch.
+func (ns *NamedStopwatch) AddElapsedSince(name string, t time.Time) {
+	ns.Lock()
+	defer ns.Unlock()
+
+	if s, ok := ns.stopwatches[name]; ok {
+		s.AddElapsedSince(t)
+	}
 }
