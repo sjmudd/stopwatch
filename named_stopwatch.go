@@ -260,6 +260,9 @@ func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
 
 // AddElapsedSince adds the duration since the reference time to the given named stopwatch.
 func (ns *NamedStopwatch) AddElapsedSince(name string, t time.Time) {
+	if ns == nil {
+		return
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
