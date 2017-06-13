@@ -112,6 +112,9 @@ func (ns *NamedStopwatch) Exists(name string) bool {
 
 // Start starts a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Start(name string) {
+	if ns == nil {
+		return // if we're not using stopwatches we just do nothing
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
@@ -130,6 +133,9 @@ func (ns *NamedStopwatch) start(name string) {
 
 // StartMany allows you to start several stopwatches in one go
 func (ns *NamedStopwatch) StartMany(names []string) {
+	if ns == nil {
+		return // if we're not using stopwatches we just do nothing
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
@@ -140,11 +146,15 @@ func (ns *NamedStopwatch) StartMany(names []string) {
 
 // Stop stops a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Stop(name string) {
+	if ns == nil {
+		return // if we're not using stopwatches we just do nothing
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
 	ns.stop(name)
 }
+
 
 // stop stops a NamedStopwatch if it exists and expects the structure to be locked.
 func (ns *NamedStopwatch) stop(name string) {
@@ -162,6 +172,9 @@ func (ns *NamedStopwatch) stop(name string) {
 
 // StopMany allows you to stop several stopwatches in one go
 func (ns *NamedStopwatch) StopMany(names []string) {
+	if ns == nil {
+		return // if we're not using stopwatches we just do nothing
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
@@ -172,6 +185,9 @@ func (ns *NamedStopwatch) StopMany(names []string) {
 
 // Reset resets a NamedStopwatch if it exists
 func (ns *NamedStopwatch) Reset(name string) {
+	if ns == nil {
+		return // if we're not using stopwatches we just do nothing
+	}
 	ns.Lock()
 	defer ns.Unlock()
 
@@ -185,12 +201,13 @@ func (ns *NamedStopwatch) Reset(name string) {
 
 // Keys returns the known names of Stopwatches
 func (ns *NamedStopwatch) Keys() []string {
-	ns.RLock()
-	defer ns.RUnlock()
-
 	if ns == nil {
 		return nil
 	}
+
+	ns.RLock()
+	defer ns.RUnlock()
+
 	keys := []string{}
 	for k := range ns.stopwatches {
 		keys = append(keys, k)
@@ -200,6 +217,9 @@ func (ns *NamedStopwatch) Keys() []string {
 
 // Elapsed returns the elapsed time.Duration of the named stopwatch if it exists or 0
 func (ns *NamedStopwatch) Elapsed(name string) time.Duration {
+	if ns == nil {
+		return time.Duration(0)
+	}
 	ns.RLock()
 	defer ns.RUnlock()
 
@@ -212,6 +232,9 @@ func (ns *NamedStopwatch) Elapsed(name string) time.Duration {
 // ElapsedSeconds returns the elapsed time in seconds of the named
 // stopwatch if it exists or 0.
 func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
+	if ns == nil {
+		return float64(0)
+	}
 	ns.RLock()
 	defer ns.RUnlock()
 
@@ -224,6 +247,9 @@ func (ns *NamedStopwatch) ElapsedSeconds(name string) float64 {
 // ElapsedMilliSeconds returns the elapsed time in milliseconds of
 // the named stopwatch if it exists or 0.
 func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
+	if ns == nil {
+		return float64(0)
+	}
 	ns.RLock()
 	defer ns.RUnlock()
 
@@ -231,14 +257,4 @@ func (ns *NamedStopwatch) ElapsedMilliSeconds(name string) float64 {
 		return s.ElapsedMilliSeconds()
 	}
 	return float64(0)
-}
-
-// AddElapsedSince adds the duration since the reference time to the given named stopwatch.
-func (ns *NamedStopwatch) AddElapsedSince(name string, t time.Time) {
-	ns.Lock()
-	defer ns.Unlock()
-
-	if s, ok := ns.stopwatches[name]; ok {
-		s.AddElapsedSince(t)
-	}
 }
