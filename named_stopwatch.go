@@ -33,12 +33,17 @@ import (
 	"time"
 )
 
+type logger interface {
+	Warning(args ...interface{})
+}
+
 // NamedStopwatch holds a map of string named stopwatches. Intended
 // to be used when several Stopwatches are being used at once, and
 // easy to use as they are name based.
 type NamedStopwatch struct {
 	sync.RWMutex
 	stopwatches map[string](*Stopwatch)
+	logger      logger
 }
 
 // NewNamedStopwatch creates an empty Stopwatch list
@@ -163,8 +168,8 @@ func (ns *NamedStopwatch) stop(name string) {
 	if s, ok := ns.stopwatches[name]; ok {
 		if s.IsRunning() {
 			s.Stop()
-		} else {
-			fmt.Printf("WARNING: NamedStopwatch.Stop(%q) IsRunning is false\n", name)
+		} else if ns.logger != nil {
+			ns.logger.Warning("NamedStopwatch.Stop(%q) IsRunning is false\n", name)
 		}
 	}
 }
@@ -269,4 +274,9 @@ func (ns *NamedStopwatch) AddElapsedSince(name string, t time.Time) {
 	if s, ok := ns.stopwatches[name]; ok {
 		s.AddElapsedSince(t)
 	}
+}
+
+// SetLogger is used to set the logger interface
+func (ns *NamedStopwatch) SetLogger(logger logger) {
+	ns.logger = logger
 }
