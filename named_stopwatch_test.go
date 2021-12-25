@@ -91,3 +91,28 @@ func TestAddManyNamedStopwatch(t *testing.T) {
 		}
 	}
 }
+
+func TestLogger(t *testing.T) {
+	n1 := NewNamedStopwatch()
+	log := &mockLogger{}
+
+	// Make sure we dont panic
+	n1.Add("loggerTest")
+	n1.stop("loggerTest")
+
+	n1.SetLogger(log)
+	n1.stop("loggerTest")
+
+	if log.logged == false {
+		t.Errorf("Expected logger to be called")
+	}
+
+}
+
+type mockLogger struct {
+	logged bool
+}
+
+func (m *mockLogger) Warning(args ...interface{}) {
+	m.logged = true
+}
